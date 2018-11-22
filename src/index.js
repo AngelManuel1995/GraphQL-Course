@@ -3,26 +3,41 @@ import { GraphQLServer }  from 'graphql-yoga'
 //Type definitions (schema)
 const typeDefs = `
     type Query {
-        hello: String!
-        greeting: String!
-        city: String!
-        profesion: String!
+        me: User!
+        post: Post!
+    }
+    
+    type User {
+        id: ID!
+        name: String!
+        email: String
+        age: Int
+    }
+    
+    type Post {
+        id: ID!
+        title: String!
+        body: String!
     }
 `
 // Resolver
 const resolvers = {
     Query: {
-        hello(){
-            return 'Hello World GraphQL'
+        me(){
+            return { 
+                id:'1036658046',
+                name: 'Angel Manuel Góez Giraldo',
+                email: 'angel@example.com.co',
+                age: 23
+            }   
         },
-        greeting() {
-            return 'Hello Anguel Manuel Góez Giraldo'
-        },
-        city(){
-            return 'Medellín'
-        },
-        profesion(){
-            return 'Computer Sciensts'
+
+        post() {
+            return {
+                id: '90901',
+                title: 'GraphQl',
+                body: 'This is my first graphql custom type'
+            }
         }
     }
 }
