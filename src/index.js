@@ -3,6 +3,7 @@ import { GraphQLServer }  from 'graphql-yoga'
 //Type definitions (schema)
 const typeDefs = `
     type Query {
+        greeting(name:String, position:String):String!
         me: User!
         post: Post!
     }
@@ -19,10 +20,24 @@ const typeDefs = `
         title: String!
         body: String!
     }
+
+    type Subject {
+        id: ID!
+        name: String!
+        credits: Int!
+    }
 `
 // Resolver
 const resolvers = {
     Query: {
+        greeting(parent, args, ctx, nifo){
+            if(args.name && args.position){
+                return `Hello, ${args.name}! you are my favoriate ${args.position}.`
+            }else{
+                return 'Hello!'
+            }
+        },
+
         me(){
             return { 
                 id:'1036658046',
@@ -38,7 +53,9 @@ const resolvers = {
                 title: 'GraphQl',
                 body: 'This is my first graphql custom type'
             }
-        }
+        },
+
+        
     }
 }
 
