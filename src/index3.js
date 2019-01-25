@@ -1,4 +1,5 @@
 import { GraphQLServer } from 'graphql-yoga'
+import uuidv4 from 'uuid/v4'
 // La libreria que vamos a usar es graphql-yoga
 
 //Escencialmente necesitamos tres elementos para trabajar con graphql
@@ -17,17 +18,20 @@ const usuarios = [
     {
         id: '12918721',
         age: 23,
-        name: 'Angel Manuel Góez Giraldo'
+        name: 'Angel Manuel Góez Giraldo',
+        email:'angelmanuel.goez@gmail.com'
     },
     {
         id: '12918722',
         age: 3,
-        name: 'Emanuel Góez Giraldo'
+        name: 'Emanuel Góez Giraldo',
+        email:'emanuel.goez@gmail.com'
     },
     {
         id: '12918723',
         age: 23,
-        name: 'Adriana Maria Góez'
+        name: 'Adriana Maria Góez',
+        email:'adriana.goez@gmail.com'
     }
 ]
 
@@ -127,6 +131,10 @@ const typeDefs = `
         getComentario:Comentario!
     }
     
+    type Mutation {
+        crearUsuario(age: Int!, name:String!, email:String!):Usuario!
+    }
+
     type Post {
         id: ID!,
         title: String!,
@@ -141,6 +149,7 @@ const typeDefs = `
         id: ID!,
         age: Int!,
         name: String!,
+        email: String!,
         posts:[Post!]!,
         comentarios:[Comentario!]!
     }
@@ -186,6 +195,30 @@ const resolvers = {
         getComentario(){
             return comentarios[1]
         },
+    },
+
+    Mutation: {
+        crearUsuario(parent, args, ctx, info){
+            const correoRegistrado = usuarios.some( (usuario) => {
+                return usuario.email === args.email
+            })
+
+            if(correoRegistrado){
+                throw new Error('El correo ya está registrado')
+            }
+
+            const usuario = {
+                id: uuidv4(),
+                age: args.age,
+                name: args.name,
+                email: args.email
+            }
+
+            usuarios.push(usuario)
+
+            return usuario
+
+        }
     },
 
     Post: {
