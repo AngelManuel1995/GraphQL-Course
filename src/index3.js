@@ -232,9 +232,9 @@ const resolvers = {
 
             const post = {
                 id: uuidv4(),
+                date: new Date().toDateString(),
                 title: args.title, 
                 body: args.body,
-                date: new Date().toDateString(),
                 publish: args.publish,
                 autor: args.autor
             }
