@@ -211,9 +211,7 @@ const resolvers = {
 
             const usuario = {
                 id: uuidv4(),
-                age: args.age,
-                name: args.name,
-                email: args.email
+                ...args
             }
 
             usuarios.push(usuario)
@@ -233,10 +231,7 @@ const resolvers = {
             const post = {
                 id: uuidv4(),
                 date: new Date().toDateString(),
-                title: args.title, 
-                body: args.body,
-                publish: args.publish,
-                autor: args.autor
+                ...args
             }
 
             posts.push(post)
@@ -258,9 +253,7 @@ const resolvers = {
 
             const comentario = {
                 id: uuidv4(),
-                text:args.text,
-                autor: args.autor,
-                post: args.post
+                ...args
             }
 
             comentarios.push(comentario)
