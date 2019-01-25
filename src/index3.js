@@ -132,8 +132,9 @@ const typeDefs = `
     }
     
     type Mutation {
-        crearUsuario(age: Int!, name:String!, email:String!):Usuario!
+        crearUsuario( age: Int!, name:String!, email:String! ):Usuario!
         crearPost( title:String, body:String!, publish:Boolean!, autor:ID! ):Post!
+        crearComentario( text:String!, autor:ID!, post:ID! ):Comentario!
     }
 
     type Post {
@@ -199,7 +200,7 @@ const resolvers = {
     },
 
     Mutation: {
-        crearUsuario(parent, args, ctx, info){
+        crearUsuario( parent, args, ctx, info ){
             const correoRegistrado = usuarios.some( (usuario) => {
                 return usuario.email === args.email
             })
@@ -220,9 +221,9 @@ const resolvers = {
             return usuario
 
         },
-        crearPost(parent, args, ctx, info){
+        crearPost( parent, args, ctx, info ){
             const existeUsuario = usuarios.some((usuario) => {
-                return usuario.id = args.autor
+                return usuario.id === args.autor
             })
             
             if(!existeUsuario){
@@ -241,6 +242,30 @@ const resolvers = {
             posts.push(post)
 
             return post
+        },
+        crearComentario( parent, args, ctx, info ){
+            const existeUsuario = usuarios.some( (usuario) => {
+                return usuario.id === args.autor
+            })
+
+            const existePost = posts.some( (post) => {
+                return post.id === args.post && post.publish
+            })
+
+            if(!existeUsuario ||  !existePost){
+                throw new Error('Error al crear el comentario')
+            }
+
+            const comentario = {
+                id: uuidv4(),
+                text:args.text,
+                autor: args.autor,
+                post: args.post
+            }
+
+            comentarios.push(comentario)
+
+            return comentario
         }
     },
 
