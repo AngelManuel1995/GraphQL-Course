@@ -133,6 +133,7 @@ const typeDefs = `
     
     type Mutation {
         crearUsuario(age: Int!, name:String!, email:String!):Usuario!
+        crearPost( title:String, body:String!, publish:Boolean!, autor:ID! ):Post!
     }
 
     type Post {
@@ -218,6 +219,28 @@ const resolvers = {
 
             return usuario
 
+        },
+        crearPost(parent, args, ctx, info){
+            const existeUsuario = usuarios.some((usuario) => {
+                return usuario.id = args.autor
+            })
+            
+            if(!existeUsuario){
+                throw new Error('El usuario no existe')
+            }
+
+            const post = {
+                id: uuidv4(),
+                title: args.title, 
+                body: args.body,
+                date: new Date().toDateString(),
+                publish: args.publish,
+                autor: args.autor
+            }
+
+            posts.push(post)
+
+            return post
         }
     },
 
