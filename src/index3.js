@@ -14,6 +14,8 @@ import uuidv4 from 'uuid/v4'
  * finalmente lo que tenemos que hacer es ejecutar el servidor
  */
 
+
+
 const usuarios = [
     {
         id: '12918721',
@@ -132,9 +134,28 @@ const typeDefs = `
     }
     
     type Mutation {
-        crearUsuario( age: Int!, name:String!, email:String! ):Usuario!
-        crearPost( title:String, body:String!, publish:Boolean!, autor:ID! ):Post!
-        crearComentario( text:String!, autor:ID!, post:ID! ):Comentario!
+        crearUsuario( data: CrearUsuarioInput ):Usuario!
+        crearPost( data: CrearPostInput ):Post!
+        crearComentario( data: CrearComentarioInput ):Comentario!
+    }
+
+    input CrearUsuarioInput {
+        age: Int!,
+        name:String!,
+        email:String!,
+    }
+
+    input CrearPostInput {
+        title:String!,
+        body:String!,
+        publish:Boolean!,
+        autor:ID!,
+    }
+
+    input CrearComentarioInput {
+        text:String!,
+        autor:ID!,
+        post:ID!,
     }
 
     type Post {
@@ -202,7 +223,7 @@ const resolvers = {
     Mutation: {
         crearUsuario( parent, args, ctx, info ){
             const correoRegistrado = usuarios.some( (usuario) => {
-                return usuario.email === args.email
+                return usuario.email === args.data.email
             })
 
             if(correoRegistrado){
@@ -211,7 +232,7 @@ const resolvers = {
 
             const usuario = {
                 id: uuidv4(),
-                ...args
+                ...args.data
             }
 
             usuarios.push(usuario)
@@ -221,7 +242,7 @@ const resolvers = {
         },
         crearPost( parent, args, ctx, info ){
             const existeUsuario = usuarios.some((usuario) => {
-                return usuario.id === args.autor
+                return usuario.id === args.data.autor
             })
             
             if(!existeUsuario){
@@ -231,7 +252,7 @@ const resolvers = {
             const post = {
                 id: uuidv4(),
                 date: new Date().toDateString(),
-                ...args
+                ...args.data
             }
 
             posts.push(post)
@@ -240,11 +261,11 @@ const resolvers = {
         },
         crearComentario( parent, args, ctx, info ){
             const existeUsuario = usuarios.some( (usuario) => {
-                return usuario.id === args.autor
+                return usuario.id === args.data.autor
             })
 
             const existePost = posts.some( (post) => {
-                return post.id === args.post && post.publish
+                return post.id === args.data.post && post.publish
             })
 
             if(!existeUsuario ||  !existePost){
@@ -253,7 +274,7 @@ const resolvers = {
 
             const comentario = {
                 id: uuidv4(),
-                ...args
+                ...args.data
             }
 
             comentarios.push(comentario)
