@@ -16,7 +16,7 @@ import uuidv4 from 'uuid/v4'
 
 
 
-const usuarios = [
+let usuarios = [
     {
         id: '12918721',
         age: 23,
@@ -37,7 +37,7 @@ const usuarios = [
     }
 ]
 
-const posts = [
+let posts = [
     {
         id:'12345',
         title:'This is my first POST',
@@ -88,7 +88,7 @@ const posts = [
     }
 ]
 
-const comentarios = [
+let comentarios = [
     {
         id:'104',
         text:'Primer comentario',
@@ -135,6 +135,7 @@ const typeDefs = `
     
     type Mutation {
         crearUsuario( data: CrearUsuarioInput ):Usuario!
+        eliminarUsuario( id:ID! ):Usuario!
         crearPost( data: CrearPostInput ):Post!
         crearComentario( data: CrearComentarioInput ):Comentario!
     }
@@ -240,6 +241,35 @@ const resolvers = {
             return usuario
 
         },
+        eliminarUsuario( parent, args, ctx, info ){
+            console.log(usuarios)
+            console.log(posts)
+            console.log(comentarios)
+            
+           const indexUsuario = usuarios.findIndex(usuario => usuario.id === args.id)
+           
+           if(indexUsuario === -1){
+               throw new Error('No existe usario con ese ID')
+           }
+
+           const usarioEliminado = usuarios.splice(indexUsuario,1)
+
+           posts = posts.filter( (post) => {
+                const match = post.autor = args.id
+
+                if(match){
+                    comentarios = comentarios.filter((comentario) => comentario.post !== post.id )
+                }
+
+                return !match
+           })
+           
+            console.log(usuarios)
+            console.log(posts)
+            console.log(comentarios)
+
+           return usarioEliminado[0]
+        },
         crearPost( parent, args, ctx, info ){
             const existeUsuario = usuarios.some((usuario) => {
                 return usuario.id === args.data.autor
@@ -280,7 +310,7 @@ const resolvers = {
             comentarios.push(comentario)
 
             return comentario
-        }
+        },
     },
 
     Post: {
