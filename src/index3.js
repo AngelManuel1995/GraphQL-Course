@@ -52,7 +52,7 @@ let posts = [
         body:'In this review we are going to remember GraphQL Basics 2',
         date: new Date().toDateString(),
         publish:false,
-        autor:'12918721'
+        autor:'12918722'
     },
     {
         id:'12347',
@@ -63,15 +63,15 @@ let posts = [
         autor:'12918721'
     },
     {
-        id:'12347',
+        id:'12348',
         title:'This is my forth POST',
         body:'In this review we are going to remember GraphQL Basics 3',
         date: new Date().toDateString(),
         publish:false,
-        autor:'12918721'
+        autor:'12918722'
     },
     {
-        id:'12347',
+        id:'12349',
         title:'This is my fifth POST',
         body:'In this review we are going to remember GraphQL Basics 3',
         date: new Date().toDateString(),
@@ -79,12 +79,12 @@ let posts = [
         autor:'12918721'
     },
     {
-        id:'12347',
+        id:'12310',
         title:'This is my sixth POST',
         body:'In this review we are going to remember GraphQL Basics 3',
         date: new Date().toDateString(),
         publish:false,
-        autor:'12918721'
+        autor:'12918723'
     }
 ]
 
@@ -117,7 +117,7 @@ let comentarios = [
         id:'107',
         text:'Quinto comentario',
         autor:'12918722',
-        post:'12347'
+        post:'12310'
     },
 ]
 
@@ -242,10 +242,7 @@ const resolvers = {
 
         },
         eliminarUsuario( parent, args, ctx, info ){
-            console.log(usuarios)
-            console.log(posts)
-            console.log(comentarios)
-            
+
            const indexUsuario = usuarios.findIndex(usuario => usuario.id === args.id)
            
            if(indexUsuario === -1){
@@ -255,7 +252,7 @@ const resolvers = {
            const usarioEliminado = usuarios.splice(indexUsuario,1)
 
            posts = posts.filter( (post) => {
-                const match = post.autor = args.id
+                const match = post.autor === args.id
 
                 if(match){
                     comentarios = comentarios.filter((comentario) => comentario.post !== post.id )
@@ -263,11 +260,7 @@ const resolvers = {
 
                 return !match
            })
-           
-            console.log(usuarios)
-            console.log(posts)
-            console.log(comentarios)
-
+            
            return usarioEliminado[0]
         },
         crearPost( parent, args, ctx, info ){
