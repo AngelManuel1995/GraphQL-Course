@@ -1,0 +1,64 @@
+type Query {
+    greeting(nombre:String): String!
+    farewell(nombre:String): String!
+    getPost: Post!
+    getPosts: [Post!]!
+    getUsuario:Usuario!
+    getUsuarios:[Usuario!]!
+    getComentarios:[Comentario!]!
+    getComentario:Comentario!
+}
+
+type Mutation {
+    crearUsuario( data: CrearUsuarioInput ):Usuario!
+    eliminarUsuario( id:ID! ):Usuario!
+    crearPost( data: CrearPostInput ):Post!
+    eliminarPost( id: ID! ): Post!
+    crearComentario( data: CrearComentarioInput ):Comentario!
+    eliminarComentario( id: ID! ):Comentario!
+}
+
+input CrearUsuarioInput {
+    age: Int!
+    name:String!
+    email:String!
+}
+
+input CrearPostInput {
+    title:String!
+    body:String!
+    publish:Boolean!
+    autor:ID!
+}
+
+input CrearComentarioInput {
+    text:String!
+    autor:ID!
+    post:ID!
+}
+
+type Post {
+    id: ID!
+    title: String!
+    body:  String!
+    date:  String!
+    publish: Boolean!
+    autor: Usuario!
+    comentarios:[Comentario!]!
+}
+
+type Usuario {
+    id: ID!
+    age: Int!
+    name: String!
+    email: String!
+    posts:[Post!]!
+    comentarios:[Comentario!]!
+}
+
+type Comentario{
+    id:ID!
+    text:String!
+    autor:Usuario!
+    post:Post!
+}
