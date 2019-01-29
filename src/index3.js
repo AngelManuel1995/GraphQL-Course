@@ -1,5 +1,6 @@
 import { GraphQLServer } from 'graphql-yoga'
 import uuidv4 from 'uuid/v4'
+import db from './db'
 // La libreria que vamos a usar es graphql-yoga
 
 //Escencialmente necesitamos tres elementos para trabajar con graphql
@@ -13,180 +14,6 @@ import uuidv4 from 'uuid/v4'
  * la tercera parte en un objeto del tipo GraphQLServer que toma como parametro las dos constantes creadas anteriormente
  * finalmente lo que tenemos que hacer es ejecutar el servidor
  */
-
-
-
-let usuarios = [
-    {
-        id: '12918721',
-        age: 23,
-        name: 'Angel Manuel Góez Giraldo',
-        email:'angelmanuel.goez@gmail.com'
-    },
-    {
-        id: '12918722',
-        age: 3,
-        name: 'Emanuel Góez Giraldo',
-        email:'emanuel.goez@gmail.com'
-    },
-    {
-        id: '12918723',
-        age: 23,
-        name: 'Adriana Maria Góez',
-        email:'adriana.goez@gmail.com'
-    }
-]
-
-let posts = [
-    {
-        id:'12345',
-        title:'This is my first POST',
-        body:'In this review we are going to remember GraphQL Basics 1',
-        date: new Date().toDateString(),
-        publish:false,
-        autor:'12918721'
-    },
-    {
-        id:'12346',
-        title:'This is my second POST',
-        body:'In this review we are going to remember GraphQL Basics 2',
-        date: new Date().toDateString(),
-        publish:false,
-        autor:'12918722'
-    },
-    {
-        id:'12347',
-        title:'This is my third POST',
-        body:'In this review we are going to remember GraphQL Basics 3',
-        date: new Date().toDateString(),
-        publish:false,
-        autor:'12918721'
-    },
-    {
-        id:'12348',
-        title:'This is my forth POST',
-        body:'In this review we are going to remember GraphQL Basics 3',
-        date: new Date().toDateString(),
-        publish:false,
-        autor:'12918722'
-    },
-    {
-        id:'12349',
-        title:'This is my fifth POST',
-        body:'In this review we are going to remember GraphQL Basics 3',
-        date: new Date().toDateString(),
-        publish:false,
-        autor:'12918721'
-    },
-    {
-        id:'12310',
-        title:'This is my sixth POST',
-        body:'In this review we are going to remember GraphQL Basics 3',
-        date: new Date().toDateString(),
-        publish:false,
-        autor:'12918723'
-    }
-]
-
-let comentarios = [
-    {
-        id:'104',
-        text:'Primer comentario',
-        autor:'12918721',
-        post:'12345'
-    },
-    {
-        id:'102',
-        text:'Segundo comentario',
-        autor:'12918721',
-        post:'12345'
-    },
-    {
-        id:'105',
-        text:'Tercer comentario',
-        autor:'12918721',
-        post:'12346'
-    },
-    {
-        id:'106',
-        text:'Cuarto comentario',
-        autor:'12918723',
-        post:'12346'
-    },
-    {
-        id:'107',
-        text:'Quinto comentario',
-        autor:'12918722',
-        post:'12310'
-    },
-]
-
-const typeDefs = `
-    type Query {
-        greeting(nombre:String): String!
-        farewell(nombre:String): String!
-        getPost: Post!
-        getPosts: [Post!]!
-        getUsuario:Usuario!
-        getUsuarios:[Usuario!]!
-        getComentarios:[Comentario!]!
-        getComentario:Comentario!
-    }
-    
-    type Mutation {
-        crearUsuario( data: CrearUsuarioInput ):Usuario!
-        eliminarUsuario( id:ID! ):Usuario!
-        crearPost( data: CrearPostInput ):Post!
-        eliminarPost( id: ID! ): Post!
-        crearComentario( data: CrearComentarioInput ):Comentario!
-        eliminarComentario( id: ID! ):Comentario!
-    }
-
-    input CrearUsuarioInput {
-        age: Int!,
-        name:String!,
-        email:String!,
-    }
-
-    input CrearPostInput {
-        title:String!,
-        body:String!,
-        publish:Boolean!,
-        autor:ID!,
-    }
-
-    input CrearComentarioInput {
-        text:String!,
-        autor:ID!,
-        post:ID!,
-    }
-
-    type Post {
-        id: ID!,
-        title: String!,
-        body:  String!,
-        date:  String!,
-        publish: Boolean!,
-        autor: Usuario!,
-        comentarios:[Comentario!]!
-    }
-
-    type Usuario {
-        id: ID!,
-        age: Int!,
-        name: String!,
-        email: String!,
-        posts:[Post!]!,
-        comentarios:[Comentario!]!
-    }
-
-    type Comentario{
-        id:ID!,
-        text:String!,
-        autor:Usuario!,
-        post:Post!
-    }
-`
 
 const resolvers = {
     Query: {
@@ -224,8 +51,8 @@ const resolvers = {
     },
 
     Mutation: {
-        crearUsuario( parent, args, ctx, info ){
-            const correoRegistrado = usuarios.some( (usuario) => {
+        crearUsuario( parent, args, { db }, info ){
+            const correoRegistrado = db.usuarios.some( (usuario) => {
                 return usuario.email === args.data.email
             })
 
@@ -238,26 +65,26 @@ const resolvers = {
                 ...args.data
             }
 
-            usuarios.push(usuario)
+            db.usuarios.push(usuario)
 
             return usuario
 
         },
-        eliminarUsuario( parent, args, ctx, info ){
+        eliminarUsuario( parent, args, { db }, info ){
 
-           const indexUsuario = usuarios.findIndex(usuario => usuario.id === args.id)
+           const indexUsuario = db.usuarios.findIndex(usuario => usuario.id === args.id)
            
            if(indexUsuario === -1){
                throw new Error('No existe usario con ese ID')
            }
 
-           const usarioEliminado = usuarios.splice(indexUsuario,1)
+           const usarioEliminado = db.usuarios.splice(indexUsuario,1)
 
-           posts = posts.filter( (post) => {
+           db.posts = db.posts.filter( (post) => {
                 const match = post.autor === args.id
 
                 if(match){
-                    comentarios = comentarios.filter((comentario) => comentario.post !== post.id )
+                    db.comentarios = db.comentarios.filter((comentario) => comentario.post !== post.id )
                 }
 
                 return !match
@@ -265,8 +92,8 @@ const resolvers = {
             
            return usarioEliminado[0]
         },
-        crearPost( parent, args, ctx, info ){
-            const existeUsuario = usuarios.some((usuario) => {
+        crearPost( parent, args, { db }, info ){
+            const existeUsuario = db.usuarios.some((usuario) => {
                 return usuario.id === args.data.autor
             })
             
@@ -280,30 +107,30 @@ const resolvers = {
                 ...args.data
             }
 
-            posts.push(post)
+            db.posts.push(post)
 
             return post
         },
-        eliminarPost( parent, args, ctx, info ){
-            const indexPost = posts.findIndex((post) => post.id === args.id)
+        eliminarPost( parent, args, { db }, info ){
+            const indexPost = db.posts.findIndex((post) => post.id === args.id)
 
             if(indexPost === -1){
                 throw new Error('No se encuentra ese POST')
             }
 
-            const postEliminado = posts.splice(indexPost,1)
+            const postEliminado = db.posts.splice(indexPost,1)
 
-            comentarios = comentarios.filter((comentario) => comentario.post !== args.id )
+            db.comentarios = db.comentarios.filter((comentario) => comentario.post !== args.id )
             
             return postEliminado[0]
 
         },
-        crearComentario( parent, args, ctx, info ){
-            const existeUsuario = usuarios.some( (usuario) => {
+        crearComentario( parent, args, { db }, info ){
+            const existeUsuario = db.usuarios.some( (usuario) => {
                 return usuario.id === args.data.autor
             })
 
-            const existePost = posts.some( (post) => {
+            const existePost = db.posts.some( (post) => {
                 return post.id === args.data.post && post.publish
             })
 
@@ -316,67 +143,70 @@ const resolvers = {
                 ...args.data
             }
 
-            comentarios.push(comentario)
+            db.comentarios.push(comentario)
 
             return comentario
         },
-        eliminarComentario( parent, args, ctx, info){
-            const indexComentario = comentarios.findIndex(comentario => comentario.id === args.id)
+        eliminarComentario( parent, args, { db }, info){
+            const indexComentario = db.comentarios.findIndex(comentario => comentario.id === args.id)
 
             if(indexComentario === -1){
                 throw new Error('No se encuetra ese comentario')
             }
 
-            const comentario = comentarios.splice(indexComentario, 1)
-
-            console.log(comentarios)
+            const comentario = db.comentarios.splice(indexComentario, 1)
 
             return comentario[0]
-
         }
     },
 
     Post: {
-        autor(parent, args, ctx, info){
-            return usuarios.find((usuario) => {
+        autor(parent, args, { db }, info){
+            return db.usuarios.find((usuario) => {
                 return parent.autor === usuario.id
             })
         },
-        comentarios(parent, args, ctx, info){
-            return comentarios.filter((comentario) => {
+        comentarios(parent, args, { db }, info){
+            return db.comentarios.filter((comentario) => {
                 return parent.id === comentario.post
             })
         }
     },
 
     Comentario:{
-        autor(parent, args, ctx, info){
-            return usuarios.find((usuario) => {
+        autor(parent, args, { db }, info){
+            return db.usuarios.find((usuario) => {
                 return usuario.id === parent.autor
             })
         },
-        post(parent, args, ctx, info){
-            return posts.find((post) => {
+        post(parent, args, { db }, info){
+            return db.posts.find((post) => {
                 return parent.post === post.id
             })
         }
     },
 
     Usuario:{
-        comentarios(parent, args, ctx, info){
-            return comentarios.filter((comentario)=> {
+        comentarios(parent, args, { db }, info){
+            return db.comentarios.filter((comentario)=> {
                 return parent.id === comentario.autor
             })
         },
-        posts(parent, args, ctx, info){
-            return posts.filter( (post) => {
+        posts(parent, args, { db }, info){
+            return db.posts.filter( (post) => {
                 return parent.id === post.autor
             })
         }
     }
 }
 
-const server = new GraphQLServer({typeDefs, resolvers})
+const server = new GraphQLServer({
+    typeDefs:'./src/schema.graphql', 
+    resolvers,
+    context:{
+        db
+    }
+})
 
 server.start(() => {
     console.log('Servidor 3 está arriba')
