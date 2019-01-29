@@ -99,7 +99,7 @@ let comentarios = [
         id:'102',
         text:'Segundo comentario',
         autor:'12918721',
-        post:'12346'
+        post:'12345'
     },
     {
         id:'105',
@@ -137,6 +137,7 @@ const typeDefs = `
         crearUsuario( data: CrearUsuarioInput ):Usuario!
         eliminarUsuario( id:ID! ):Usuario!
         crearPost( data: CrearPostInput ):Post!
+        eliminarPost( id: ID! ): Post!
         crearComentario( data: CrearComentarioInput ):Comentario!
     }
 
@@ -281,6 +282,20 @@ const resolvers = {
             posts.push(post)
 
             return post
+        },
+        eliminarPost( parent, args, ctx, info ){
+            const indexPost = posts.findIndex((post) => post.id === args.id)
+
+            if(indexPost === -1){
+                throw new Error('No se encuentra ese POST')
+            }
+
+            const postEliminado = posts.splice(indexPost,1)
+
+            comentarios = comentarios.filter((comentario) => comentario.post !== args.id )
+            console.log(comentarios)
+            return postEliminado[0]
+
         },
         crearComentario( parent, args, ctx, info ){
             const existeUsuario = usuarios.some( (usuario) => {
