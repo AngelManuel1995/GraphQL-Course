@@ -139,6 +139,7 @@ const typeDefs = `
         crearPost( data: CrearPostInput ):Post!
         eliminarPost( id: ID! ): Post!
         crearComentario( data: CrearComentarioInput ):Comentario!
+        eliminarComentario( id: ID! ):Comentario!
     }
 
     input CrearUsuarioInput {
@@ -293,7 +294,7 @@ const resolvers = {
             const postEliminado = posts.splice(indexPost,1)
 
             comentarios = comentarios.filter((comentario) => comentario.post !== args.id )
-            console.log(comentarios)
+            
             return postEliminado[0]
 
         },
@@ -319,6 +320,20 @@ const resolvers = {
 
             return comentario
         },
+        eliminarComentario( parent, args, ctx, info){
+            const indexComentario = comentarios.findIndex(comentario => comentario.id === args.id)
+
+            if(indexComentario === -1){
+                throw new Error('No se encuetra ese comentario')
+            }
+
+            const comentario = comentarios.splice(indexComentario, 1)
+
+            console.log(comentarios)
+
+            return comentario[0]
+
+        }
     },
 
     Post: {
