@@ -1,10 +1,11 @@
-import { GraphQLServer } from 'graphql-yoga'
+import { GraphQLServer, PubSub } from 'graphql-yoga'
 import db                from './db'
 import Query             from './resolvers/Query' 
 import Mutation          from './resolvers/Mutation' 
-import Usuario          from './resolvers/Usuario' 
-import Post             from './resolvers/Post' 
-import Comentario       from './resolvers/Comentario' 
+import Subscription      from './resolvers/Subscription'
+import Usuario           from './resolvers/Usuario' 
+import Post              from './resolvers/Post' 
+import Comentario        from './resolvers/Comentario' 
 // La libreria que vamos a usar es graphql-yoga
 
 //Escencialmente necesitamos tres elementos para trabajar con graphql
@@ -19,17 +20,21 @@ import Comentario       from './resolvers/Comentario'
  * finalmente lo que tenemos que hacer es ejecutar el servidor
  */
 
+const pubsub = new PubSub()
+
 const server = new GraphQLServer({
     typeDefs:'./src/schema.graphql', 
     resolvers:{
         Query,
         Mutation,
+        Subscription,
         Usuario,
         Post,
         Comentario
     },
     context:{
-        db
+        db,
+        pubsub
     }
 })
 

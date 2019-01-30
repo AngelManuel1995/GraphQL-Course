@@ -18,6 +18,10 @@ type Mutation {
     eliminarComentario( id: ID! ):Comentario!
 }
 
+type Subscription {
+    count: Int!
+}
+
 input CrearUsuarioInput {
     age: Int!
     name:String!
