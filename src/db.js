@@ -109,4 +109,4 @@ const db = {
     comentarios
 }
 
-export {db as default}
+export { db as default }

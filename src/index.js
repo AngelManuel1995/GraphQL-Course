@@ -1,90 +1,38 @@
-import { GraphQLServer }  from 'graphql-yoga'
+import { GraphQLServer } from 'graphql-yoga'
+import db                from './db'
+import Query             from './resolvers/Query' 
+import Mutation          from './resolvers/Mutation' 
+import Usuario          from './resolvers/Usuario' 
+import Post             from './resolvers/Post' 
+import Comentario       from './resolvers/Comentario' 
+// La libreria que vamos a usar es graphql-yoga
 
-//Type definitions (schema)
-//Tios de datos en GrahpQL
-// Int, String, Float, ID, Boolean, [] (arreglo de objetos)
-// Con ! indicamos que el valor tiene que ser retornado
-const typeDefs = `
-    type Query {
-        greeting(name:String, position:String):String!
-        grades:[Int!]!
-        me: User!
-        post: Post!
-        add(numbers: [Float!]!): Float!
-    }
-    
-    type User {
-        id: ID!
-        name: String!
-        email: String
-        age: Int
-    }
-    
-    type Post {
-        id: ID!
-        title: String!
-        body: String!
-    }
-
-    type Subject {
-        id: ID!
-        name: String!
-        credits: Int!
-    }
-`
-// Resolver
-const resolvers = {
-    Query: {
-        greeting(parent, args, ctx, info){
-            if(args.name && args.position){
-                return `Hello, ${args.name}! you are my favoriate ${args.position}.`
-            }else{
-                return 'Hello!'
-            }
-        },
-
-        add(parent, args, ctx, info){
-            if(args.numbers.length === 0){
-                return 0
-            }
-            return args.numbers.reduce((acumulate, current) => {
-                return acumulate + current
-            })
-        },
-
-        grades(){
-            return [
-                1,2
-            ]
-        },
-
-        me(){
-            return { 
-                id:'1036658046',
-                name: 'Angel Manuel Góez Giraldo',
-                email: 'angel@example.com.co',
-                age: 23
-            }   
-        },
-
-        post() {
-            return {
-                id: '90901',
-                title: 'GraphQl',
-                body: 'This is my first graphql custom type'
-            }
-        },
-
-        
-    }
-}
-
+//Escencialmente necesitamos tres elementos para trabajar con graphql
+/**
+ * Una de ellas son las declaraciones de las funciones y la otra las creaciones de las funciones
+ * es como un directorio de funciones, un especie de diccionario donde un una parte tenemos las 
+ * definiciones y en otra parte el significado o lo que hacen estas definiciones
+ * 
+ * entonces el primer elemento es una template string que contiene las definiciones
+ * nuestra segunda parte es la parte un (objeto) donde decimos que van a hacer lo que definamos en la template
+ * la tercera parte en un objeto del tipo GraphQLServer que toma como parametro las dos constantes creadas anteriormente
+ * finalmente lo que tenemos que hacer es ejecutar el servidor
+ */
 
 const server = new GraphQLServer({
-    typeDefs,
-    resolvers
+    typeDefs:'./src/schema.graphql', 
+    resolvers:{
+        Query,
+        Mutation,
+        Usuario,
+        Post,
+        Comentario
+    },
+    context:{
+        db
+    }
 })
 
 server.start(() => {
-    console.log('The server is UP')
+    console.log('Servidor está arriba')
 })
