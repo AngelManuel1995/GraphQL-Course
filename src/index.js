@@ -1,11 +1,11 @@
 import { GraphQLServer, PubSub } from 'graphql-yoga'
-import db                from './db'
-import Query             from './resolvers/Query' 
-import Mutation          from './resolvers/Mutation' 
-import Subscription      from './resolvers/Subscription'
-import Usuario           from './resolvers/Usuario' 
-import Post              from './resolvers/Post' 
-import Comentario        from './resolvers/Comentario' 
+import db                        from './db'
+import Query                     from './resolvers/Query' 
+import Mutation                  from './resolvers/Mutation' 
+import Subscription              from './resolvers/Subscription'
+import Usuario                   from './resolvers/Usuario' 
+import Post                      from './resolvers/Post' 
+import Comentario                from './resolvers/Comentario' 
 // La libreria que vamos a usar es graphql-yoga
 
 //Escencialmente necesitamos tres elementos para trabajar con graphql
